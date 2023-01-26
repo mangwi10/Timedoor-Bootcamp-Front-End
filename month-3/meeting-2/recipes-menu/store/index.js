@@ -50,13 +50,16 @@ export const getters = {
     let recipesLength = state.recipes.length;
     return state.recipes[recipesLength - 1].id;
   },
+  detailRecipe: (state) => (id) => {
+    return state.recipes.find((recipe) => recipe.id === id);
+  },
 };
 //mutations
 
 export const mutations = {
-  // addNewRecipe(state, payload) {
-  //   return state.recipes.push(payload);
-  // },
+  addNewRecipe(state, payload) {
+    return state.recipes.push(payload);
+  },
   setRecipe(state, payload) {
     state.recipes = payload;
   },
@@ -67,7 +70,7 @@ export const actions = {
   nuxtServerInit({ commit }) {
     return axios
       .get(
-        "https://final-project-month2-default-rtdb.firebaseio.com/datarecipe.json"
+        "https://bootcamp-timedoor-vuejs-default-rtdb.asia-southeast1.firebasedatabase.app/recipes.json"
       )
       .then((response) => {
         const recipeArray = [];
@@ -77,5 +80,15 @@ export const actions = {
         commit("setRecipe", recipeArray);
       })
       .catch((e) => context.error(e));
+  },
+  addRecipe({ commit }, recipe) {
+    return axios
+      .post(
+        "https://bootcamp-timedoor-vuejs-default-rtdb.asia-southeast1.firebasedatabase.app/recipes.json",
+        recipe
+      )
+      .then(() => {
+        commit("addNewRecipe", recipe);
+      });
   },
 };

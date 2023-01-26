@@ -16,6 +16,7 @@
   </div>
 </template>
 <script>
+import axios from 'axios'
 export default {
   data() {
     return {
@@ -29,10 +30,23 @@ export default {
   },
   methods: {
     addRecipe() {
-      let newId = this.$store.getters.lastIdRecipe + 1
-      this.$store.commit('addNewRecipe', { id: newId, ...this.newRecipe })
-      this.$router.push("/");
-    }
+      // let newId = this.$store.getters.lastIdRecipe + 1
+      // this.$store.commit('addNewRecipe', { id: newId, ...this.newRecipe })
+      // this.$router.push("/");
+      //   axios.post(
+      //     "https://bootcamp-timedoor-vuejs-default-rtdb.asia-southeast1.firebasedatabase.app/recipes.json",
+      //     this.newRecipe
+      //   ).then(response => {
+      //     console.log(response)
+      //     this.$router.push("/");
+
+      //   })
+      // }
+      this.$store.dispatch("addRecipe", this.newRecipe)
+        .then(() => {
+          this.$router.push("/");
+        });
+    },
   }
 }
 </script>
