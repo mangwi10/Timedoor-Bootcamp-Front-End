@@ -1,4 +1,5 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 
 //state
 export const state = () => ({
@@ -40,6 +41,8 @@ export const state = () => ({
   //   },
   // ],
   recipes: [],
+  token: null,
+  userData: null,
 });
 // getter
 export const getters = {
@@ -53,6 +56,12 @@ export const getters = {
   detailRecipe: (state) => (id) => {
     return state.recipes.find((recipe) => recipe.id === id);
   },
+  isAuthenticated(state) {
+    return state.token != null;
+  },
+  userId(state) {
+    return state.userData.userId;
+  },
 };
 //mutations
 
@@ -62,6 +71,12 @@ export const mutations = {
   },
   setRecipe(state, payload) {
     state.recipes = payload;
+  },
+  setToken(state, payload) {
+    state.token = payload;
+  },
+  setUserData(state, payload) {
+    state.userData = payload;
   },
 };
 
@@ -81,14 +96,89 @@ export const actions = {
       })
       .catch((e) => context.error(e));
   },
-  addRecipe({ commit }, recipe) {
+  addRecipe({ commit, state }, recipe) {
     return axios
       .post(
-        "https://bootcamp-timedoor-vuejs-default-rtdb.asia-southeast1.firebasedatabase.app/recipes.json",
-        recipe
+        "https://bootcamp-timedoor-vuejs-default-rtdb.asia-southeast1.firebasedatabase.app/recipes.json?auth=" +
+          state.token,
+        { ...recipe, userId: state.userData.userId }
       )
-      .then(() => {
-        commit("addNewRecipe", recipe);
+      .then((response) => {
+        commit("addNewRecipe", { ...recipe, userId: state.userData.userId });
+        alert("RESEP BERHASIL DITAMBAHKAN!!!");
       });
+  },
+  authenticateUser({ commit }, authData) {
+    let webAPIKey = "AIzaSyDOMzLV3S9yuKCl3NocmM0pm63Dou0Xyqw";
+    let authUrl = authData.isLogin
+      ? "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key="
+      : "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=";
+    return axios
+      .post(authUrl + webAPIKey, {
+        email: authData.email,
+        password: authData.password,
+        returnSecureToken: true,
+        displayName: authData.displayName,
+      })
+      .then((response) => {
+        // console.log(response);
+        commit("setToken", response.data.idToken);
+        commit("setUserData", {
+          username: response.data.displayName,
+          userId: response.data.localId,
+          email: response.data.email,
+        });
+        console.log(authData);
+        localStorage.setItem("token", response.data.idToken);
+        Cookies.set("jwt", response.data.idToken);
+        const userData = {
+          username: response.data.displayName,
+          userId: response.data.localId,
+          email: response.data.email,
+        };
+        localStorage.setItem("user", JSON.stringify(userData));
+        Cookies.set("acc_user", JSON.stringify(userData));
+        // localStorage.setItem("token", response.data.idToken);
+        // Cookies.set("jwt", response.data.idToken);
+        // alert("SUKSES!!!!");
+      })
+      .catch((error) => console.log(error));
+  },
+  initAuth({ commit }, req) {
+    let user;
+    let token;
+    if (req) {
+      if (!req.headers.cookie) {
+        return;
+      }
+      const jwtCookie = req.headers.cookie
+        .split(";")
+        .find((c) => c.trim().startsWith("jwt="));
+      const accUserCookie = req.headers.cookie
+        .split(";")
+        .find((c) => c.trim().startsWith("acc_user="));
+
+      const userCookie = accUserCookie.substr(accUserCookie.indexOf("=") + 1);
+      user = JSON.parse(decodeURIComponent(userCookie));
+      if (!jwtCookie) {
+        return;
+      }
+      token = jwtCookie.split("=")[1];
+    } else {
+      token = localStorage.getItem("token");
+      user = JSON.parse(localStorage.getItem("user"));
+    }
+    commit("setToken", token);
+    commit("setUserData", user);
+  },
+
+  logout({ commit }) {
+    commit("setToken", null);
+    Cookies.remove("jwt");
+    Cookies.remove("acc_user");
+    if (process.client) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+    }
   },
 };

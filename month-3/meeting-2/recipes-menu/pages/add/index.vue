@@ -18,6 +18,7 @@
 <script>
 import axios from 'axios'
 export default {
+  middleware: ["check-auth", "auth"],
   data() {
     return {
       newRecipe: {

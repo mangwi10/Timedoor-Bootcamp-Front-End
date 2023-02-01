@@ -8,6 +8,7 @@
 <script>
 import RecipeList from '../components/recipe/RecipeList.vue';
 export default {
+  middleware: "check-auth",
   components: {
     RecipeList
   },
