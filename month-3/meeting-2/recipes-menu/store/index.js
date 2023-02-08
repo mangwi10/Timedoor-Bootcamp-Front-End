@@ -13,7 +13,7 @@ export const state = () => ({
   //   },
   //   {
   //     id: 2,
-  //     recipeImage: "https://i.ibb.co/MRNhgzW/Tomyam.jpg",
+  //     recipeImage: " ",
   //     recipeTitle: "Tomyam",
   //     likes: 40,
   //     body: "Tomyam Recipe",

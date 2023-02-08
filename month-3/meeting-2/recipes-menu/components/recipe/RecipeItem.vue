@@ -1,26 +1,23 @@
 <template>
-  <div style="margin: 0px;">
-    <main>
-      <div class="recipes">
-        <nuxt-link class="recipes-content" :to="{
-          name: 'recipe-recipeId',
-          params: { recipeId: recipe.id }
-        }">
-          <img class="recipes-content__img" alt="Pasta" :src="recipe.recipeImage">
-          <div class="recipes-content__body">
-            <h1 class="recipes-content__body__title">
-              {{
-                recipe.recipeTitle
-              }}</h1>
-            <div class="recipes-content__body__review">
-              <img src="images/heart.png" alt="Heart">
-              <p>{{ recipe.likes }} Likes</p>
-            </div>
+  <div class="col-sm-6 col-md-3 col-lg-2">
+    <nuxt-link tag='div' :to="{
+      name: 'recipe-recipeId',
+      params: { recipeId: recipe.id }
+    }">
+      <div class="card">
+        <img class="recipes-content__img card-img-top rounded" alt="Pasta" :src="recipe.recipeImage">
+        <div class="card-body">
+          <h1 class="card-text fs-5 text" style="height: 45px; align-item: center;">
+            {{
+              recipe.recipeTitle
+            }}</h1>
+          <div class="recipes-content__body__review card-footer bg-transparent">
+            <img src="icons/heart.png" alt="Heart">
+            <p>{{ recipe.likes }} Likes</p>
           </div>
-        </nuxt-link>
+        </div>
       </div>
-    </main>
-    <footer></footer>
+    </nuxt-link>
   </div>
 
 </template>
@@ -63,8 +60,8 @@ main {
 }
 
 .recipes-content__img {
-  width: 280px;
-  height: 210px;
+  width: 100%;
+  height: auto;
 }
 
 .recipes-content__body__review {
@@ -80,6 +77,7 @@ main {
 
 .recipes-content__body__review p {
   margin: 0px;
+  text-decoration: none;
 }
 
 .recipes-content__body__review img:hover {

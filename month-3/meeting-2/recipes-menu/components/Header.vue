@@ -1,24 +1,33 @@
 <template>
-  <div>
-    <header class="header">
-      <h1 class="header-title">Food Recipes</h1>
-      <nav class="header-nav">
-        <nuxt-link tag="a" to="/" class="header-nav__link">Home</nuxt-link>
-        <nuxt-link tag="a" to="/add" class="header-nav__link">Add
-          Recipes</nuxt-link>
-        <nuxt-link tag="a" to="/user/login" class="header-nav__link" v-if="!$store.getters.isAuthenticated">
-          Login
-        </nuxt-link>
-        <a href="#" class="header-nav__link" v-if="$store.getters.isAuthenticated" @click="logout">
-          Logout
-        </a>
-        <nuxt-link tag="a" to="/user/userItem" class="header-nav__link" v-if="$store.getters.isAuthenticated">
-          {{ $store.state.userData.username }}
-        </nuxt-link>
-      </nav>
-    </header>
-  </div>
+  <header class="navbar bg-light">
+    <div class="container-fluid">
+      <nuxt-link tag="a" class="navbar-brand text-brand" to="/">
+        <img src="/icons/logo.png" alt="Logo" width="44" height="44" class="d-inline-block align-text-center" />
+        Food Recipes
+      </nuxt-link>
+      <ul class="nav justify-content-end">
+        <li class="nav-item">
+          <nuxt-link to="/" tag="a" class="nav-link active" aria-current="page">Home</nuxt-link>
+        </li>
+        <li class="nav-item">
+          <nuxt-link class="nav-link" to="/add">New Recipe</nuxt-link>
+        </li>
+        <li class="nav-item" v-if="!$store.getters.isAuthenticated">
+          <nuxt-link class="nav-link" to="/user/login">Login</nuxt-link>
+        </li>
+        <li class="nav-item" v-if="$store.getters.isAuthenticated">
+          <a class="nav-link" @click="logout">Logout</a>
+        </li>
+        <li class="nav-item" v-if="$store.getters.isAuthenticated">
+          <nuxt-link class="nav-link" tag="a" to="/user/userItem">{{
+            $store.state.userData.username
+          }}</nuxt-link>
+        </li>
+      </ul>
+    </div>
+  </header>
 </template>
+
 <script>
 export default {
   methods: {
@@ -26,32 +35,21 @@ export default {
       this.$store.dispatch("logout")
         .then(() => this.$router.push("/user/login"))
     }
-  }
-}
+  },
+};
 </script>
+
 <style>
 header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-left: 40px;
-  padding-right: 40px;
-  background-color: #EEF2E6;
+  margin-bottom: 20px;
 }
 
-main {
-  margin: 22px;
+a:hover {
+  cursor: pointer;
 }
 
-.recipes {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.header-nav__link {
-  margin-left: 20px;
-  color: black;
-  text-decoration: none;
-  font-size: 20px;
+.text-brand {
+  font-family: 'Pacifico';
+  font-style: italic;
 }
 </style>

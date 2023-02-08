@@ -1,6 +1,8 @@
 <template>
-  <div class="recipes">
-    <RecipeItem v-for="data in dataRecipes" :key="data.id" :recipe="data"></RecipeItem>
+  <div class="container">
+    <div class="row g-5">
+      <RecipeItem v-for="data in dataRecipes" :key="data.id" :recipe="data"></RecipeItem>
+    </div>
   </div>
 </template>
 <script>
