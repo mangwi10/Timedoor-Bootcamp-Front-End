@@ -1,0 +1,8 @@
+<template>
+  <div class="col-4">
+    <button type="button" class="btn btn-success">
+      <slot></slot>
+    </button>
+    <button type="button" class="btn btn-danger"><slot></slot></button>
+  </div>
+</template>

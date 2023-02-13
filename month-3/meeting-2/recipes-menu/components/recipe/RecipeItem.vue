@@ -1,29 +1,82 @@
 <template>
-  <div class="col-sm-6 col-md-3 col-lg-2">
-    <nuxt-link tag='div' :to="{
-      name: 'recipe-recipeId',
-      params: { recipeId: recipe.id }
-    }">
+  <div class="col-sm-6 col-md-3">
+    <div>
       <div class="card">
         <img class="recipes-content__img card-img-top rounded" alt="Pasta" :src="recipe.recipeImage">
         <div class="card-body">
-          <h1 class="card-text fs-5 text" style="height: 45px; align-item: center;">
+          <p class="mb-0">{{ recipe.username }}</p>
+          <nuxt-link tag="h1" :to="{
+            name: 'recipe-recipeId',
+            params: { recipeId: recipe.id }
+          }" class="card-text fs-5 text" style="height: 45px; align-item: center;">
             {{
               recipe.recipeTitle
-            }}</h1>
+            }}</nuxt-link>
           <div class="recipes-content__body__review card-footer bg-transparent">
-            <img src="icons/heart.png" alt="Heart">
-            <p>{{ recipe.likes }} Likes</p>
+            <img :src="likeImage" @click="likeClick" />
+            <p>{{ likeCount }} Likes</p>
           </div>
         </div>
       </div>
-    </nuxt-link>
+    </div>
   </div>
-
 </template>
 <script>
 export default {
-  props: ["recipe"]
+  props: ["recipe"],
+  computed: {
+    likeCount() {
+      if (this.recipe.dataLikes.length === 1) {
+        if (this.recipe.dataLikes[0] === "null") {
+          return 0
+        }
+        return 1
+      }
+      return this.recipe.dataLikes.length
+    },
+    likeImage() {
+      const userEmail = this.$store.getters.userEmail;
+      const checkLike = this.recipe.dataLikes.filter(
+        (item) => item === userEmail
+      );
+      if (checkLike.length === 0) {
+        return "icons/heart-black.png"
+      }
+      return "icons/heart-red.png"
+    }
+  },
+  methods: {
+    likeClick() {
+      if (!this.$store.getters.isAuthenticated) {
+        this.$router.push("/user/login");
+      }
+      const userEmail = this.$store.getters.userEmail;
+      const recipe = this.recipe;
+      if (recipe.dataLikes.length === 1 && recipe.dataLikes[0] === "null") {
+        recipe.dataLikes[0] = userEmail;
+      } else {
+        const checkLike = recipe.dataLikes.filter(
+          (item) => item === userEmail
+        );
+        if (checkLike.length === 0) {
+          recipe.dataLikes.push(userEmail);
+        } else {
+          if (recipe.dataLikes.length === 1) {
+            recipe.dataLikes[0] = "null"
+          } else {
+            const userEmailIndex = recipe.dataLikes.
+              findIndex(item => item === userEmail
+              )
+            recipe.dataLikes.splice(userEmailIndex, 1)
+          }
+        }
+      }
+      let { id: _, ...newRecipe } = recipe
+      this.$store.dispatch("likeUpdate", {
+        recipeId: this.recipe.id, newDataRecipe: newRecipe
+      })
+    },
+  }
 }
 </script>
 <style>

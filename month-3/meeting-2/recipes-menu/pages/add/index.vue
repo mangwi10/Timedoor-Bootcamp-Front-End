@@ -1,5 +1,43 @@
 <template>
-  <div style="margin: 0px">
+  <div>
+    <div class="container w-50">
+      <div class="row g-3 justify-content-md-center">
+        <Input placeholder="Chicken friedrice" v-model="newRecipe.recipeTitle">
+        <label class="form-label">Recipe Title</label>
+        </Input>
+        <Input placeholder="www.imgelink.com/fried-rice.jpg" v-model="newRecipe.recipeImage">
+        <label class="form-label">Recipe Image</label>
+        </Input>
+        <TextArea v-model="newRecipe.desciption">
+      <label class="form-label">Recipe Description</label>
+    </TextArea>
+      </div>
+
+      <div class="col-12">
+        <h2>Ingredients</h2>
+      </div>
+      <div class="row g-1 justify-content-md-center" style="margin-top: 5px" v-for="item in ingredientCount"
+        :key="item">
+        <Input colStyle="col-8" placeholder="2 large eggs" v-model="newRecipe.ingredients[item - 1]"></Input>
+
+        <Button :buttonType="item !== ingredientCount ? 'delete' : 'add'" @click="addIngredient(item)">
+          {{ item !== ingredientCount ? "Delete" : "Add" }}
+        </Button>
+      </div>
+
+      <div class="col-12">
+        <h2>Directions</h2>
+      </div>
+      <div class="row g-1 justify-content-md-center" style="margin-top: 5px" v-for="item in directionCount" :key="item">
+        <Input colStyle="col-8" :placeholder="`Step ${item}`" v-model="newRecipe.directions[item - 1]"></Input>
+        <Button :buttonType="item !== directionCount ? 'delete' : 'add'" @click="addDirection(item)">{{ item !==
+        directionCount ? "Delete" : "Add" }}</Button>
+      </div>
+
+      <Button @click="addRecipe">Submit</Button>
+    </div>
+  </div>
+  <!-- <div style="margin: 0px">
     <main>
       <div class="add-recipe">
         <label>
@@ -13,20 +51,31 @@
         <button class="add-recipe__button" @click="addRecipe">Add Recipe</button>
       </div>
     </main>
-  </div>
+  </div> -->
 </template>
 <script>
-import axios from 'axios'
+import Input from '../../components/newRecipe/Input.vue';
+import Button from '../../components/newRecipe/Button.vue';
+import TextArea from '../../components/newRecipe/TextArea.vue';
+
 export default {
   middleware: ["check-auth", "auth"],
+  components: {
+    Input,
+    Button,
+    TextArea
+  },
   data() {
     return {
       newRecipe: {
         recipeImage: "",
         recipeTitle: "",
-        likes: 0,
-        body: ""
-      }
+        ingredients: [],
+        directions: [],
+        desciption: "",
+      },
+      ingredientCount: 1,
+      directionCount: 1,
     }
   },
   methods: {
@@ -47,6 +96,22 @@ export default {
         .then(() => {
           this.$router.push("/");
         });
+    },
+    addIngredient(item) {
+      if (item === this.ingredientCount) {
+        this.ingredientCount += 1;
+      } else {
+        this.newRecipe.ingredients.splice(item - 1, 1);
+        this.ingredientCount -= 1;
+      }
+    },
+    addDirection(item) {
+      if (item === this.directionCount) {
+        this.directionCount += 1;
+      } else {
+        this.newRecipe.directions.splice(item - 1, 1);
+        this.directionCount -= 1;
+      }
     },
   }
 }
